@@ -2,3 +2,4 @@ os
 pathlib
 fnmatch
 xmltodict
+matplotlib

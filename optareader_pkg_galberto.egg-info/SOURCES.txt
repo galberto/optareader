@@ -1,0 +1,10 @@
+README.md
+setup.py
+optareader/__init__.py
+optareader/optareader.py
+optareader/custom_functions/__init__.py
+optareader/dictionary/__init__.py
+optareader_pkg_galberto.egg-info/PKG-INFO
+optareader_pkg_galberto.egg-info/SOURCES.txt
+optareader_pkg_galberto.egg-info/dependency_links.txt
+optareader_pkg_galberto.egg-info/top_level.txt

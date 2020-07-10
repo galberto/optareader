@@ -11,7 +11,7 @@ setuptools.setup(
     description="This package allows to interact with opta files",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/galberto/optareader",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
