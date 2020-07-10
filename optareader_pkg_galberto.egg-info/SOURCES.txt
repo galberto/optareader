@@ -7,4 +7,5 @@ optareader/dictionary/__init__.py
 optareader_pkg_galberto.egg-info/PKG-INFO
 optareader_pkg_galberto.egg-info/SOURCES.txt
 optareader_pkg_galberto.egg-info/dependency_links.txt
+optareader_pkg_galberto.egg-info/requires.txt
 optareader_pkg_galberto.egg-info/top_level.txt
