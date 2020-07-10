@@ -1,6 +1,7 @@
 Esta librería esta construída para explotar datos de Opta. 
-Contiene las siguientes clases y métodos
+Las sigeuientes librerías son necesarias: pandas, xmltodict y matplotlib
 
+Contiene las siguientes clases y métodos
 
 OptaCatalog
 	Lee todos los files existentes en un directorio y almacena en memoria información para acceder a ellos de manera rápida.
