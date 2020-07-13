@@ -671,6 +671,7 @@ class OptaF24(OptaFile):
 			groupBy (str) : column name to group by the metric
 			metric (str) : column name to summarize
 			agg (str) : kind of aggregation. Can be sum, min, max, mean, std, count, nunique
+			top (int) : number of rows to show. default 50
 			qualified (bool) : when true retrieves dataframe with qualifiers else only events
 			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
@@ -678,11 +679,12 @@ class OptaF24(OptaFile):
 		return:
 			dataframe
 		"""
+		top = kwargs['top'] if 'top' in kwargs else 50
 
 		qualified = kwargs['qualified'] if 'qualified' in kwargs else False
 		data = self.getQualifiedEvents(**kwargs) if qualified else self.getEvents(**kwargs)
 
-		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg )
+		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top=top )
 
 
 	def PlotPitchEvents(self, **kwargs):
@@ -998,6 +1000,7 @@ class OptaPassMatrix(OptaFile):
 			groupBy (str) : column name to group by the metric
 			metric (str) : column name to summarize
 			agg (str) : kind of aggregation. Can be sum, min, max, mean, std, count, nunique
+			top (int) : number of rows to show. default 50
 			qualified (bool) : when true retrieves dataframe with qualifiers else only events
 			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
@@ -1006,9 +1009,10 @@ class OptaPassMatrix(OptaFile):
 			dataframe
 		"""
 
+		top = kwargs['top'] if 'top' in kwargs else 50
 		data = self.getPlayerPassStats(**kwargs)
 
-		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg )
+		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top=top )
 
 ####################################################################################
 ########################             Start Class            ########################
@@ -1360,6 +1364,7 @@ class OptaMatchResults(OptaFile):
 			groupBy (str) : column name to group by the metric
 			metric (str) : column name to summarize
 			agg (str) : kind of aggregation. Can be sum, min, max, mean, std, count, nunique
+			top (int) : number of rows to show. default 50
 			qualified (bool) : when true retrieves dataframe with qualifiers else only events
 			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
@@ -1367,10 +1372,10 @@ class OptaMatchResults(OptaFile):
 		return:
 			dataframe
 		"""
-
+		top = kwargs['top'] if 'top' in kwargs else 50
 		data = self.getPlayersWithStats(**kwargs)
 
-		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg )
+		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top=top )
 
 ####################################################################################
 ########################             Start Class            ########################
@@ -1538,6 +1543,7 @@ class OptaSeasonStats(OptaFile):
 			groupBy (str) : column name to group by the metric
 			metric (str) : column name to summarize
 			agg (str) : kind of aggregation. Can be sum, min, max, mean, std, count, nunique
+			top (int) : number of rows to show. default 50
 			qualified (bool) : when true retrieves dataframe with qualifiers else only events
 			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
@@ -1545,10 +1551,10 @@ class OptaSeasonStats(OptaFile):
 		return:
 			dataframe
 		"""
-
+		top = kwargs['top'] if 'top' in kwargs else 50
 		data = self.getPlayersStats(**kwargs)
 
-		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg )
+		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top=top )
 
 ####################################################################################
 ########################             Start Class            ########################
@@ -1655,6 +1661,7 @@ class OptaStandings(OptaFile):
 			groupBy (str) : column name to group by the metric
 			metric (str) : column name to summarize
 			agg (str) : kind of aggregation. Can be sum, min, max, mean, std, count, nunique
+			top (int) : number of rows to show. default 50
 			qualified (bool) : when true retrieves dataframe with qualifiers else only events
 			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
@@ -1662,10 +1669,10 @@ class OptaStandings(OptaFile):
 		return:
 			dataframe
 		"""
-
+		top = kwargs['top'] if 'top' in kwargs else 50
 		data = self.getStandings(**kwargs)
 
-		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg )
+		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top )
 
 ####################################################################################
 ########################             Start Class            ########################
@@ -2573,6 +2580,7 @@ class Teams():
 			groupBy (str) : column name to group by the metric
 			metric (str) : column name to summarize
 			agg (str) : kind of aggregation. Can be sum, min, max, mean, std, count, nunique
+			top (int) : number of rows to show. default 50
 			qualified (bool) : when true retrieves dataframe with qualifiers else only events
 			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
@@ -2580,13 +2588,14 @@ class Teams():
 		return:
 			dataframe
 		"""
+		top = kwargs['top'] if 'top' in kwargs else 50
 		if not 'F24' in self.TeamsCatalog:
 			return "No Opta F24 files was found in catalog"
 
 		qualified = kwargs['qualified'] if 'qualified' in kwargs else False
 		data = self.getQualifiedEvents(**kwargs) if qualified else self.getEvents(**kwargs)
 
-		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg )
+		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top=top )
 
 
 	def getPossession(self, origin:str, posType:str, **kwargs):
@@ -2724,6 +2733,7 @@ class Teams():
 			groupBy (str) : column name to group by the metric
 			metric (str) : column name to summarize
 			agg (str) : kind of aggregation. Can be sum, min, max, mean, std, count, nunique
+			top (int) : number of rows to show default 50
 			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 		
@@ -2733,10 +2743,12 @@ class Teams():
 		if not 'MatchResults' in self.TeamsCatalog:
 			return "No Opta MatchResults files was found in catalog"
 
+		top = kwargs['top'] if 'top' in kwargs else 50
+
 		qualified = kwargs['qualified'] if 'qualified' in kwargs else False
 		data = self.getMatchResultsPlayerStats(**kwargs)
 
-		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg )
+		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top=top )
 
 
 	def getMatchResultsBookings(self, owner="own", **kwargs):
@@ -2875,6 +2887,7 @@ class Teams():
 			groupBy (str) : column name to group by the metric
 			metric (str) : column name to summarize
 			agg (str) : kind of aggregation. Can be sum, min, max, mean, std, count, nunique
+			top (int) : number of rows to show default 50
 			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 		
@@ -2883,11 +2896,12 @@ class Teams():
 		"""
 		if not 'PassMatrix' in self.TeamsCatalog:
 			return "No Opta PassMatrix files was found in catalog"
+		top = kwargs['top'] if 'top' in kwargs else 50
 
 		qualified = kwargs['qualified'] if 'qualified' in kwargs else False
 		data = self.getPassStats(**kwargs)
 
-		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg )
+		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top=top )
 
 
 	def getPassReceptors(self, owner="own", **kwargs):
@@ -3057,6 +3071,7 @@ class Teams():
 			groupBy (str) : column name to group by the metric
 			metric (str) : column name to summarize
 			agg (str) : kind of aggregation. Can be sum, min, max, mean, std, count, nunique
+			top (int) : number of rows to show default 50
 			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 		
@@ -3065,11 +3080,12 @@ class Teams():
 		"""
 		if not 'SeasonStats' in self.TeamsCatalog:
 			return "No Opta SeasonStats files was found in catalog"
+		top = kwargs['top'] if 'top' in kwargs else 50
 
 		qualified = kwargs['qualified'] if 'qualified' in kwargs else False
 		data = self.getTeamPlayersSeasonStats(**kwargs)
 
-		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg )
+		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top=top )
 
 
 
@@ -3527,6 +3543,7 @@ class Players():
 			groupBy (str) : column name to group by the metric
 			metric (str) : column name to summarize
 			agg (str) : kind of aggregation. Can be sum, min, max, mean, std, count, nunique
+			top (int) : number of rows to show default 50
 			qualified (bool) : when true retrieves dataframe with qualifiers else only events
 			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
@@ -3534,13 +3551,14 @@ class Players():
 		return:
 			dataframe
 		"""
+		top = kwargs['top'] if 'top' in kwargs else 50
 		if not 'F24' in self.TeamsCatalog:
 			return "No Opta F24 files was found in catalog"
 
 		qualified = kwargs['qualified'] if 'qualified' in kwargs else False
 		data = self.getQualifiedEvents(**kwargs) if qualified else self.getEvents(**kwargs)
 
-		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg )
+		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top=top )
 
 
 
@@ -3792,16 +3810,18 @@ class Players():
 			agg (str) : kind of aggregation. Can be sum, min, max, mean, std, count, nunique
 			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			top (int) : number of rows to show default 50
 		
 		return:
 			dataframe
 		"""
+		top = kwargs['top'] if 'top' in kwargs else 50
 		if not 'PassMatrix' in self.PlayerCatalog:
 			return "No Opta PassMatrix files was found in catalog"
 
 		data = self.getPassMatrixData(**kwargs)
 
-		getRanking(df=data, groupBy='@player_name_dest', metric='passes', agg=agg )
+		getRanking(df=data, groupBy='@player_name_dest', metric='passes', agg=agg, top=top )
 
 
 
@@ -4122,6 +4142,7 @@ class Events():
 			groupBy (str) : column name to group by the metric
 			metric (str) : column name to summarize
 			agg (str) : kind of aggregation. Can be sum, min, max, mean, std, count, nunique
+			top (int) : number of rows to show default 50
 			qualified (bool) : when true retrieves dataframe with qualifiers else only events
 			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
 			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
@@ -4129,13 +4150,14 @@ class Events():
 		return:
 			dataframe
 		"""
+		top = kwargs['top'] if 'top' in kwargs else 50
 		if len(self.f24Files) == 0:
 			return "No Opta F24 files was found in catalog"
 
 		qualified = kwargs['qualified'] if 'qualified' in kwargs else False
 		data = self.getQualifiedEvents(**kwargs) if qualified else self.getEvents(**kwargs)
 
-		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg )
+		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top=top )
 
 
 		

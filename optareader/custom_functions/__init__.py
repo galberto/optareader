@@ -352,7 +352,7 @@ def pruningDF(df, fields=None, filters=None, exclude=None, removeFields=None, co
 ####################################################################################
 
 
-def getRanking(df:pd.DataFrame, groupBy:str, metric:str, agg:str):
+def getRanking(df:pd.DataFrame, groupBy:str, metric:str, agg:str, top=50):
 	"""
 	Make a horizontal bar chart order desc grouping with groupBy param and aggregating a metric with agg param
 	
@@ -361,6 +361,7 @@ def getRanking(df:pd.DataFrame, groupBy:str, metric:str, agg:str):
 		groupBy (str) : column name to group by the metric
 		metric (str) : column name to summarize
 		agg (str) : kind of aggregation. Can be sum, min, max, mean, std, count, nunique
+		top (int): number of results to show. Default 50
 	
 	return:
 		dataframe
@@ -369,10 +370,11 @@ def getRanking(df:pd.DataFrame, groupBy:str, metric:str, agg:str):
 		df[metric] = pd.to_numeric(df[metric], downcast="float")
 
 	grouped = df.groupby([groupBy])
-	grouped = eval("grouped[metric].{}()".format(agg) )
-	grouped = grouped.sort_values()
+	grouped = eval("grouped[metric].{}()".format(agg))
+	grouped = grouped.sort_values(ascending = False).head(top).sort_values()
+
 	grouped.plot(kind='barh')
-	plt.title("{} {} by {}".format(agg, metric, groupBy))
+	plt.title("top {} {} {} by {}".format(top, agg, metric, groupBy))
 	plt.show()
 
 
