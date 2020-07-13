@@ -1672,7 +1672,7 @@ class OptaStandings(OptaFile):
 		top = kwargs['top'] if 'top' in kwargs else 50
 		data = self.getStandings(**kwargs)
 
-		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top )
+		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top=top )
 
 ####################################################################################
 ########################             Start Class            ########################
