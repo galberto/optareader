@@ -122,8 +122,10 @@ class OptaCatalog:
 			except:
 				pass
 				
-			OptaSeasonsList = createNewKey(path=OptaSeasons, newKey=fileOpta.season, datatype=list())
+			season = fileOpta.season if isinstance(fileOpta.season, str) else fileOpta.season[0]
+			OptaSeasonsList = createNewKey(path=OptaSeasons, newKey=season, datatype=list())
 			OptaSeasonsList.append(x)
+
 
 			OptaCompsList = createNewKey(path=OptaCompetitions, newKey=fileOpta.competition, datatype=list())
 			OptaCompsList.append(x)
@@ -1013,6 +1015,315 @@ class OptaPassMatrix(OptaFile):
 		data = self.getPlayerPassStats(**kwargs)
 
 		getRanking(df=data, groupBy=groupBy, metric=metric, agg=agg, top=top )
+
+
+####################################################################################
+########################             Start Class            ########################
+########################            to work with            ########################
+########################         Match Results Files        ########################
+####################################################################################
+
+class OptaF7(OptaFile):
+	"""Class to work specifically with Opta Match Results Files 
+
+	Attributes:
+		configs (dict) - dictionary with data definition and location in catalog
+		match (str) - game identificator
+		players (DataFrame) : dataframe with look up table to players
+		teams (DataFrame) : dataframe with look up table to teams
+
+	params:
+		location (str): physical location of file
+		PassMatrix (dict): optional - Dict with catalogs path that identificate the location of data in file
+    """
+
+	def __init__(self, location:str, **kwargs):
+		super().__init__(location, **kwargs)
+		self.checkType('F7')
+		self.configs = kwargs['F7'] if 'F7' in kwargs else F7
+		self.match = self.giveMe(self.configs['game'])
+		self.players = self.getPlayersDict()
+		self.teams = self.getTeams()
+
+
+	def getPlayers(self, **kwargs):
+		"""
+		Get data of players in match
+		
+		params:
+			fields (list) : fields to return , 
+			filters (dict) : filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			exclude (dict) : filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			removeFields (list) : fields of column names to exclude in dataframe to return
+			constants (dict) : dict as {"column to add": "constant Value"}
+			playersPath (str) : optional - catalog path where players data is located. If not setted uses default
+
+		return:
+			df with fields requested
+		"""
+
+		playersPath = kwargs['Players'] if 'Players' in kwargs else self.configs['Players']
+
+		players = self.giveMeDF(path=playersPath, levels=3)
+		
+		fields = kwargs['fields'] if 'fields' in kwargs  else list(players.columns.values)
+		
+		players["Match_id"] = self.match
+
+		pruned = pruningDF(players, **kwargs)	
+		pruned = pruned.set_index('STP.@uID')
+		return pruned
+
+
+	def getOfficials(self, **kwargs):
+		"""
+		Get data of players in match
+		
+		params:
+			fields (list) : fields to return , 
+			filters (dict) : filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			exclude (dict) : filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			removeFields (list) : fields of column names to exclude in dataframe to return
+			constants (dict) : dict as {"column to add": "constant Value"}
+			officials (str) : optional - catalog path where officials data is located. If not setted uses default
+
+		return:
+			df with fields requested
+		"""
+
+		officialsPath = kwargs['officials'] if 'officials' in kwargs else self.configs['officials']
+
+		officials = self.giveMeDF(path=officialsPath, levels=3)
+		
+		fields = kwargs['fields'] if 'fields' in kwargs  else list(officials.columns.values)
+		
+		officials["Match_id"] = self.match
+
+		pruned = pruningDF(officials, **kwargs)	
+		return pruned
+
+
+
+	def getLineUps(self, **kwargs):
+		"""
+		Get data of players in match
+		
+		params:
+			fields (list) : fields to return , 
+			filters (dict) : filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			exclude (dict) : filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			removeFields (list) : fields of column names to exclude in dataframe to return
+			constants (dict) : dict as {"column to add": "constant Value"}
+			LineUps (str) : optional - catalog path where LineUps data is located. If not setted uses default
+
+		return:
+			df with fields requested
+		"""
+
+		playersPath = kwargs['LineUps'] if 'LineUps' in kwargs else self.configs['LineUps']
+
+		players = self.giveMeDF(path=playersPath, levels=3)
+		
+		fields = kwargs['fields'] if 'fields' in kwargs  else list(players.columns.values)
+		
+		players["Match_id"] = self.match
+
+		pruned = pruningDF(players, **kwargs)	
+		return pruned
+
+
+	def getSubstitutions(self, **kwargs):
+		"""
+		Get data of goals and assits in match
+		
+		params:
+			fields (list) : optional fields to return , 
+			removeFields (list): columns to exclude from finalDataframe
+			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			constants (dict) : dict as {"column to add": "constant Value"}
+			Substitution (str) : optional - catalog path where Substitutions data is located. If not setted uses default
+			withDetail (bool): optional - allows to add data from players look up table
+			players (DataFrame) - Allows to change the players look up table. New table should be index by STP.@uID field 
+
+		return:
+			df with fields requested
+		"""
+		subs = kwargs['Substitution'] if 'Substitution' in kwargs else self.configs['Substitution']
+		withDetail = kwargs['withDetail'] if 'withDetail' in kwargs else True
+		players = kwargs['players'] if 'players' in kwargs else self.players
+		
+		Substitutions = self.giveMeDF(path=subs, levels=3)
+		
+
+		if withDetail:
+			Substitutions = Substitutions.merge(players, how='left', 
+	                                 	right_on= 'p'+players['PlayerID'], 
+	                                 	left_on= '@SubOff',
+										suffixes=('','_lk')
+										)
+
+			Substitutions = Substitutions.merge(players, how='left', 
+	                                 	right_on= 'p'+players['PlayerID'], 
+	                                 	left_on= '@SubOn',
+										suffixes=('_off','_on')
+										)
+
+		teams = list(self.teams.Name)
+		Substitutions['rival'] = Substitutions['team_on'].apply(lambda x :  teams[0] if teams[1] == x else teams[1])
+
+		Substitutions["Match_id"] = self.match
+		pruned = pruningDF(Substitutions, **kwargs)	
+		return pruned
+
+
+
+	def getPlayersDict(self, **kwargs):
+		"""
+		Gets ids and names of every player in file
+	
+		params:
+			RenamePlayersMaps (dict) : Optional - dict with original names and final names to normalize wito other kind of files
+		return:
+			Dataframe
+		"""
+
+		configsDict = kwargs['RenamePlayersMaps'] if 'RenamePlayersMaps' in kwargs else RenamePlayersMaps
+
+		field = list(configsDict['MatchResults'])
+
+		df = self.getPlayers(fields=field).reset_index()
+		df.rename(columns=configsDict['MatchResults'], inplace=True)
+		df['PlayerID'] = df['PlayerID'].apply(lambda x : x[1:] if x[0] == 'p' else x)
+		df['name'] = df['name'] + ' ' + df['lastname']
+		del df['lastname']
+
+		return df
+
+
+	def getTeams(self, **kwargs):
+		"""
+		Get data of teams in match
+		
+		params:
+			fields (list) : fields to return , 
+			filters (dict) : filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			exclude (dict) : filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			removeFields (list) : fields of column names to exclude in dataframe to return
+			constants (dict) : dict as {"column to add": "constant Value"}
+			playersPath (str) : optional - catalog path where players data is located. If not setted uses default
+
+		return:
+			df with fields requested
+		"""
+		TeamsPath = kwargs['TeamsPath'] if 'TeamsPath' in kwargs else self.configs['Teams']
+
+		Teams = self.giveMeDF(TeamsPath, levels=3)
+
+		Teams["Match_id"] = self.match
+		pruned = pruningDF(Teams, **kwargs)	
+		pruned = pruned.set_index('@uID')
+		return pruned
+
+
+	def getBookings(self, **kwargs):
+		"""
+		Get data of bookings in match
+		
+		params:
+			fields (list) : optional fields to return , 
+			removeFields (list): columns to exclude from finalDataframe
+			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			constants (dict) : dict as {"column to add": "constant Value"}
+			Booking (str) : optional - catalog path where Booking data is located. If not setted uses default
+			withDetail (bool): optional - allows to add data from players look up table
+			players (DataFrame) - Allows to change the players look up table. New table should be index by STP.@uID field 
+
+
+		return:
+			df with fields requested
+		"""
+		Booking = kwargs['Booking'] if 'Booking' in kwargs else self.configs['Booking']
+		withDetail = kwargs['withDetail'] if 'withDetail' in kwargs else True
+		players = kwargs['players'] if 'players' in kwargs else self.players
+
+		books = self.giveMeDF(path=Booking, levels=3)
+		books["Match_id"] = self.match
+
+		if withDetail:
+			books = books.merge(players, how='left', 
+	                                 	right_on= 'p'+players['PlayerID'], 
+	                                 	left_on= '@PlayerRef',
+										suffixes=('','_lk')
+										)
+
+		books["Match_id"] = self.match
+		
+		teams = list(self.teams.Name)
+
+		books['rival'] = books['team'].apply(lambda x :  teams[0] if teams[1] == x else teams[1])
+
+		pruned = pruningDF(books, **kwargs)	
+		return pruned
+
+
+
+	def getGoals(self, **kwargs):
+		"""
+		Get data of goals and assits in match
+		
+		params:
+			fields (list) : optional fields to return , 
+			removeFields (list): columns to exclude from finalDataframe
+			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			constants (dict) : dict as {"column to add": "constant Value"}
+			goals (str) : optional - catalog path where assists and goals data is located. If not setted uses default
+			withDetail (bool): optional - allows to add data from players look up table
+			players (DataFrame) - Allows to change the players look up table. New table should be index by STP.@uID field 
+			Name_goal (str)  - column name in goals dataframe with team name
+
+		return:
+			df with fields requested
+		"""
+
+		teamName = kwargs['Name_goal'] if 'Name_goal' in kwargs else 'team_goal'
+
+		fieldsLocal = ["MTGA.@PlayerRef", "@EventID", "@Period", "@Time", "MTG.@PlayerRef"]
+		goals = kwargs['Goals'] if 'Goals' in kwargs else self.configs['Goals']
+		withDetail = kwargs['withDetail'] if 'withDetail' in kwargs else True
+		players = kwargs['players'] if 'players' in kwargs else self.players
+
+		Goals = self.giveMeDF(path=goals, levels=3)
+		
+		#maybe file doesn't have any goal 
+		try: 
+			pruned = pruningDF(Goals, fields=fieldsLocal)
+
+			if withDetail:
+				pruned = pruned.merge(players, how='left', 
+		                                 	right_on= 'p'+players['PlayerID'], 
+		                                 	left_on= 'MTG.@PlayerRef',
+											suffixes=('','_lk')
+											)
+
+				pruned = pruned.merge(players, how='left', 
+		                                 	right_on= 'p'+players['PlayerID'], 
+		                                 	left_on= 'MTGA.@PlayerRef',
+											suffixes=('_goal','_assists')
+											)
+			
+			pruned["Match_id"] = self.match
+
+			teams = list(self.teams.Name)
+
+			pruned['rival'] = pruned[teamName].apply(lambda x :  teams[0] if teams[1] == x else teams[1])
+
+			pruned = pruningDF(pruned, **kwargs)	
+			return pruned
+		except:
+			pass
 
 ####################################################################################
 ########################             Start Class            ########################
@@ -2842,6 +3153,137 @@ class Teams():
 		for i in self.TeamsCatalog['MatchResults']:
 			ob = OptaMatchResults(i)
 			df = ob.getSubstitutions(**kwargs)
+			dfs.append(df)
+
+		return pd.concat(dfs)
+
+
+
+	def getF7Substitutions(self, owner="own", **kwargs):
+		"""
+		Get substitutions in F7 opta files
+
+		params:
+			owner (str) = own -> show commited eventes. rival-> show event suffered
+			fields (list) : optional fields to return , 
+			removeFields (list): columns to exclude from finalDataframe
+			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			constants (dict) : dict as {"column to add": "constant Value"}	
+		return:
+			pandas dataframe		
+		"""		
+		if not 'F7' in self.TeamsCatalog:
+			return "No Opta F7 files was found in catalog"
+
+		filtersk = createNewKey(path=kwargs, newKey='filters', datatype=dict())
+		filtersk['team_on'] = self.team
+
+		dfs = []
+		for i in self.TeamsCatalog['F7']:
+			ob = OptaF7(i)
+			df = ob.getSubstitutions(**kwargs)
+			dfs.append(df)
+
+		return pd.concat(dfs)
+
+
+	def getF7Players(self, **kwargs):
+		"""
+		Get players in match in F7 opta files
+
+		params:
+			owner (str) = own -> show commited eventes. rival-> show event suffered
+			fields (list) : optional fields to return , 
+			removeFields (list): columns to exclude from finalDataframe
+			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			constants (dict) : dict as {"column to add": "constant Value"}
+
+	
+		return:
+			pandas dataframe
+		
+		"""		
+		if not 'F7' in self.TeamsCatalog:
+			return "No Opta F7 files was found in catalog"
+
+		filtersk = createNewKey(path=kwargs, newKey='filters', datatype=dict())
+		filtersk['Name'] = self.team
+
+
+		dfs = []
+		for i in self.TeamsCatalog['F7']:
+			ob = OptaF7(i)
+			df = ob.getPlayers(**kwargs)
+
+			dfs.append(df)
+
+		return pd.concat(dfs)
+
+
+	def getF7Bookings(self, owner="own", **kwargs):
+		"""
+		Get bookings in match results opta files
+
+		params:
+			owner (str) = own -> show commited eventes. rival-> show event suffered
+			fields (list) : optional fields to return , 
+			removeFields (list): columns to exclude from finalDataframe
+			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			constants (dict) : dict as {"column to add": "constant Value"}	
+		return:
+			pandas dataframe		
+		"""		
+		if not 'F7' in self.TeamsCatalog:
+			return "No Opta F7 files was found in catalog"
+
+		removek = createNewKey(path=kwargs, newKey='removeFields', datatype=list())
+		removes = ['Substitution', 'PlayerLineUp', 'Goal', 'Booking']
+		removek = removek.extend(removes) 
+
+
+		obj = 'team' if owner =='own' else 'rival'
+		filtersk = createNewKey(path=kwargs, newKey='filters', datatype=dict())
+		filtersk[obj] = self.team
+
+		dfs = []
+		for i in self.TeamsCatalog['F7']:
+			ob = OptaF7(i)
+			df = ob.getBookings(**kwargs)
+
+			dfs.append(df)
+
+		return pd.concat(dfs)
+
+
+	def getF7Goal(self, owner="own", **kwargs):
+		"""
+		Get goals in match results opta files
+
+		params:
+			owner (str) = own -> show commited eventes. rival-> show event suffered
+			fields (list) : optional fields to return , 
+			removeFields (list): columns to exclude from finalDataframe
+			filters (dict) : optional filter including rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			exclude (dict) : optional filter excluding rows by column names and field value as {field1 : value, field2: [valuea, valueb]}
+			constants (dict) : dict as {"column to add": "constant Value"}	
+
+		return:
+			pandas dataframe		
+		"""
+		if not 'F7' in self.TeamsCatalog:
+			return "No Opta F7 files was found in catalog"
+
+		obj = 'team_goal' if owner =='own' else 'rival'
+		filtersk = createNewKey(path=kwargs, newKey='filters', datatype=dict())
+		filtersk[obj] = self.team
+
+		dfs = []
+		for i in self.TeamsCatalog['F7']:
+			ob = OptaF7(i)
+			df = ob.getGoals(**kwargs)
 			dfs.append(df)
 
 		return pd.concat(dfs)

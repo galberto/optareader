@@ -2,12 +2,13 @@ configsDict = {
 	"OptaTypeIdentifiers" : {
 			"Game.Event" :  "F24", # game eventing in a given match
 			"Possession.PossessionWave" :  "F28", # possesion by team in a given match
-			"Venue.Name": "MatchResults", # game results in a given match
+			"MatchData.Stat": "MatchResults", # game results in a given match
 			"SoccerFeed.Player" : "PassMatrix",  # possesion by player in a given match
 			"Team.Player": "SeasonStats", #season event statistcs por a given team player by player in a given season
 			"Qualification.Type": "Standings", #season games statistcs of every team in a given season
 			"PlayerChanges.Team" : "Squads", # players of every team in a given season
-			"TimingType.TimingType": "results" # results of every match in a given season
+			"TimingType.TimingType": "results", # results of every match in a given season
+      "Result.@Winner": "F7"  # Basic Live Feed
 			},
 
 	"OptaDictDates" : {
@@ -15,7 +16,8 @@ configsDict = {
 			"F28" :  "Possession.@date",
 			"MatchResults" : "MatchInfo.Date",
 			"PassMatrix" : "SoccerFeed.@game_date",
-			"results": "SoccerDocument.MatchData.MatchInfo.Date"
+			"results": "SoccerDocument.MatchData.MatchInfo.Date",
+      "F7" : "MatchInfo.Date"
 			},
 
 	"OptaDictPlayersID" : {
@@ -24,7 +26,8 @@ configsDict = {
 			"PassMatrix" : "SoccerFeed.Player.Player.@player_id",
 			"SeasonStats": "Team.Player.@player_id", 
 			"Squads": "SoccerDocument.Team.Player.@uID",
-			"results": "SoccerDocument.MatchData.TeamData.Goal.@PlayerRef"
+			"results": "SoccerDocument.MatchData.TeamData.Goal.@PlayerRef",
+      "F7" : "SoccerDocument.Team.Player.@uID"
 			},
 
 	"OptaDictTeams" : {
@@ -35,7 +38,8 @@ configsDict = {
 			"SeasonStats": "Team.@name",
 			"Standings": "SoccerDocument.Team.Name",
 			"Squads": "SoccerDocument.Team.Name",
-			"results": "SoccerDocument.Team.Name"
+			"results": "SoccerDocument.Team.Name",
+      "F7" : "SoccerDocument.Team.Name"
 			},
 
 	"OptaDictSeason" : {
@@ -46,7 +50,8 @@ configsDict = {
 			"SeasonStats": "SeasonStatistics.@season_name",
 			"Standings": "SoccerDocument.@season_name",
 			"Squads": "SoccerDocument.@season_name",
-			"results": "SoccerDocument.@season_name"
+			"results": "SoccerDocument.@season_name",
+      "F7" : ("T", "Competition.Stat", "season_name")
 			},
 
 	"OptaDictCompetition" : {
@@ -57,7 +62,8 @@ configsDict = {
 			"SeasonStats": "SeasonStatistics.@competition_name",
 			"Standings": "SoccerDocument.@competition_name",
 			"Squads": "SoccerDocument.@competition_name",
-			"results": "SoccerDocument.@competition_name"
+			"results": "SoccerDocument.@competition_name",
+      "F7" : "Competition.Name"
 			}
 }
 
@@ -97,6 +103,18 @@ MatchResults = {
 	"Goals" : "MatchData.TeamData.Goal.Assist",
 	"Substitution" : "MatchData.TeamData.Substitution",
 	"PlayerStats" : "MatchData.TeamData.PlayerLineUp.MatchPlayer.Stat",
+}
+
+
+F7 = {
+  "Players" : "SoccerDocument.Team.Player.PersonName",
+  "Teams" : "SoccerDocument.Team",
+  "LineUps" : "MatchData.TeamData.PlayerLineUp.MatchPlayer",
+  "Substitution" : "MatchData.TeamData.Substitution",
+  "game" : "Competition.@uID",
+  "Booking": "MatchData.TeamData.Booking",
+  "Goals" : "MatchData.TeamData.Goal.Assist",
+  "officials" : "SoccerDocument.Team.TeamOfficial.PersonName"
 }
 
 SeasonStats = {
@@ -165,7 +183,15 @@ RenamePlayersMaps = {
 		"Last":"lastname" ,
 		"@Position":"position" ,
 		"Name":"team" 
-		}
+		},
+  "F7" : {
+    "STP.@uID":"PlayerID" ,
+    "First":"name" ,
+    "Last":"lastname" ,
+    "@Position":"position" ,
+    "Name":"team" 
+    }
+
 	}
 
 

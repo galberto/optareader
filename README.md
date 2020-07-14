@@ -1,10 +1,11 @@
 Esta librería esta construída para explotar datos de Opta. 
 Las sigeuientes librerías son necesarias: pandas, xmltodict y matplotlib
 
+
 Contiene las siguientes clases y métodos
 
-OptaCatalog
-	Lee todos los files existentes en un directorio y almacena en memoria información para acceder a ellos de manera rápida.
+## OptaCatalog
+Lee todos los files existentes en un directorio y almacena en memoria información para acceder a ellos de manera rápida.
 
 	showSummary()
 		muestra los tipos y conteos de archivos encontrados
@@ -17,8 +18,8 @@ OptaCatalog
 	OptaPlayersID -> diccionario con clave jugador y valor lista de archivos 
 
 
-OptaFile
-	Lee un file, lo clasifica, genera un catálogo de datos y permite acceder a ellos.
+## OptaFile
+Lee un file, lo clasifica, genera un catálogo de datos y permite acceder a ellos.
 
 	Catalog -> diccionario con key path y value datos para localizar el dato en el file
 
@@ -28,8 +29,8 @@ OptaFile
 	giveMeDF
 		Método que dado un path de un dataframe permite acceder a él y a sus padres
 
-OptaF24
-	hereda atributos de de OptaFile y agrega métodos propios sobre eventos
+## OptaF24
+hereda atributos de de OptaFile y agrega métodos propios sobre eventos
 
 	getEvents
 		muestra un dataframe con los eventos del file
@@ -43,8 +44,35 @@ OptaF24
 	PlotPitchEvents
 		Muestra un campograma con la distribución espacial de eventos
 
-OptaPassMatrix
-	hereda atributos de de OptaFile y agrega métodos propios sobre matriz de pases 
+## OptaF7
+hereda atributos de de OptaFile y agrega métodos propios sobre resultados de partidos
+	
+	getPlayers
+		devuelve un dataframe con los jugadores del partido
+
+	getTeams
+		devuelve un dataframe con los equipos del partido
+
+	getBookings
+		devuelve un dataframe con los sancionados del partido
+
+	getGoals
+		devuelve un dataframe con los goles del partido	
+
+	getSubstitutions
+		devuelve un dataframe con los cambios en el partido	
+
+	getOfficials
+		devuelve un dataframe con los entrenadores de los equipos
+
+	getLineUps
+		devuelve un dataframe con las formaciones de los equipos
+
+	getSubstitutions
+		devuelve un dataframe con las sustituciones por equipo
+
+## OptaPassMatrix
+hereda atributos de de OptaFile y agrega métodos propios sobre matriz de pases 
 
 	getPlayerPassStats
 		muestra un dataframe con las estadísticas de pases del equipo en un partido
@@ -61,8 +89,8 @@ OptaPassMatrix
 	PlotRanking
 		Muestra un gráfico de barras con el ranking de un campo a traves de una métrica y su agregación
 
-OptaMatchResults
-	hereda atributos de de OptaFile y agrega métodos propios sobre resultados de partidos
+## OptaMatchResults
+hereda atributos de de OptaFile y agrega métodos propios sobre resultados de partidos
 
 	getJudges
 		devuelve un dataframe con los árbitros del partido
@@ -88,8 +116,8 @@ OptaMatchResults
 	PlotRanking
 		Muestra un gráfico de barras con el ranking de un campo a traves de una métrica y su agregación
 
-OptaSeasonStats
-	hereda atributos de de OptaFile y agrega métodos propios sobre las estadísticas de la temporada de un equipos
+## OptaSeasonStats
+hereda atributos de de OptaFile y agrega métodos propios sobre las estadísticas de la temporada de un equipos
 
 	getTeamStats
 		devuelve un dataframe con los resultados de la temporada de un equipo
@@ -100,8 +128,8 @@ OptaSeasonStats
 	PlotRanking
 		Muestra un gráfico de barras con el ranking de un campo a traves de una métrica y su agregación
 
-OptaStandings
-	hereda atributos de de OptaFile y agrega métodos propios sobre los resultados de la temporada de un equipo
+## OptaStandings
+hereda atributos de de OptaFile y agrega métodos propios sobre los resultados de la temporada de un equipo
 
 	getStandings
 		devuelve un dataframe con los resultados de los equipos
@@ -110,8 +138,8 @@ OptaStandings
 		Muestra un gráfico de barras con el ranking de un campo a traves de una métrica y su agregación
 
 
-OptaSquads
-	hereda atributos de de OptaFile y agrega métodos propios sobre los equipos de una temporada y competición
+## OptaSquads
+hereda atributos de de OptaFile y agrega métodos propios sobre los equipos de una temporada y competición
 
 	getTeamsAndStadiums
 		devuelve un dataframe con datos de los equipos y los estadios
@@ -129,8 +157,8 @@ OptaSquads
 		devuelve un dataframe con datos descriptivos de los técnicos traspasados y datos de los traspasos
 
 
-OptaResults
-	hereda atributos de de OptaFile y agrega métodos propios sobre los resultados de los partidos en la temporada en una competición
+## OptaResults
+hereda atributos de de OptaFile y agrega métodos propios sobre los resultados de los partidos en la temporada en una competición
 
 	getMatchData
 		devuelve un dataframe con los datos de los partidos
@@ -142,8 +170,8 @@ OptaResults
 		devuelve un dataframe con los árbitros de los partidos
 
 
-OptaF28
-	hereda atributos de de OptaFile y agrega métodos propios sobre los resultados de posesión durante un partido
+## OptaF28
+hereda atributos de de OptaFile y agrega métodos propios sobre los resultados de posesión durante un partido
 
 	getIntervals
 		devuevelve un dataframe con datos de posesión por intervalos
@@ -167,8 +195,8 @@ OptaF28
 		devuelve un gráfico de barras con la posesión
 
 
-Teams
-	Permite leer múltiples archivos de Opta y devuelve información de un equipo en particular
+## Teams
+Permite leer múltiples archivos de Opta y devuelve información de un equipo en particular
 
 	getEvents
 		muestra los datos de eventos con las funciones de OptaF24
@@ -189,19 +217,32 @@ Teams
 		Devuelve un gráfico con la posesión media en todos los files
 
 	getMatchResultsPlayerStats
-		Devuelve un dataframe con todos las estadísticas de los jugadores en todos los archivos match results del directorio
+		Devuelve un dataframe con todos las estadísticas de los jugadores en todos los archivos match results del directorio  de un file F9
 
 	PlotMatchResultsRanking
-		Muestra un gráfico de barras con el ranking de un campo a traves de una métrica y su agregación
+		Muestra un gráfico de barras con el ranking de un campo a traves de una métrica y su agregación de un file F9
 
-	getMatchResultsBookings
-		Devuelve un dataframe con todos los sancionados del equipo
+	getMatchResultsBookings 
+		Devuelve un dataframe con todos los sancionados del equipo  de un file F9
 
 	getMatchResultsGoal
-		Devuelve un dataframe con todos los goles del equipo
+		Devuelve un dataframe con todos los goles del equipo  de un file F9
 
 	getMatchResultsSubstitutions
-		Devuelve un dataframe con todos los cambios del equipo en los partidos
+		Devuelve un dataframe con todos los cambios del equipo en los partidos de un file F9
+
+	getF7Substitutions
+		Devuelve un dataframe con todos los cambios del equipo en los partidos de un file F7
+
+	getF7Players
+		Devuelve un dataframe con todos los jugadores del equipo en los partidos de un file F7
+	
+	getF7Bookings
+		Devuelve un dataframe con todos los jugadores sancionados del equipo en los partidos de un file F7
+
+	getF7Goal
+		Devuelve un dataframe con todos los goles del equipo en los partidos de un file F7
+
 
 	getPassStats
 		Devuelve un dataframe con todos las estadísticas de pases de los jugadores
@@ -255,8 +296,8 @@ Teams
 		devuelve un dataframe con los datos de los referis de cada partido del equipo
 
 
-Teams
-	Permite leer múltiples archivos de Opta y devuelve información de un jugador
+## Players
+Permite leer múltiples archivos de Opta y devuelve información de un jugador
 
 	getEvents
 		muestra los datos de eventos con las funciones de OptaF24
@@ -310,8 +351,8 @@ Teams
 		Devuelve los goles del jugador en la temporada
 
 
-Events
-	Permite leer múltiples archivos F24 de Opta y devuelve información de un evento
+## Events
+Permite leer múltiples archivos F24 de Opta y devuelve información de un evento
 
 	getEvents
 		muestra los datos del evento con las funciones de OptaF24
