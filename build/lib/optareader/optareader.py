@@ -1127,7 +1127,6 @@ class OptaMatchResults(OptaFile):
 
 		Teams = self.giveMeDF(TeamsPath, levels=3)
 
-
 		Teams["Match_id"] = self.match
 		pruned = pruningDF(Teams, **kwargs)	
 		pruned = pruned.set_index('@uID')

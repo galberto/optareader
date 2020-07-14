@@ -92,7 +92,7 @@ MatchResults = {
 	"Main uID" : "MatchOfficial.@uID",
 	"Assistants" : "AssistantOfficials.AssistantOfficial",
 	"Players" : "SoccerDocument.Team.Player.PersonName",
-	"Teams" : "SoccerDocument.Team.Kit",
+	"Teams" : "SoccerDocument.Team",
 	"Booking": "MatchData.TeamData.Booking",
 	"Goals" : "MatchData.TeamData.Goal.Assist",
 	"Substitution" : "MatchData.TeamData.Substitution",
